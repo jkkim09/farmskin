@@ -113,6 +113,56 @@ public class SyntaxChecker {
 -  Tag의 중첩은 없습니다. 
 -  <> = ”” / 등 Tag와 관련된 특수문자 이외의 특수문자는 없습니다. 
 
+````js
+/**
+ * Tag 사이값을 찾아 Reverse한다.
+ * 
+ * @param {string} text     Original 문장
+ */
+function reverse (text) {
+    var itemList = text.split('')
+    var tagStart = false
+    var startIndex = 0
+    var reverseList = []
+
+    for (var i=0; i<itemList.length; i++) {
+        var item = itemList[i]
+        if (item === '<') {
+            tagStart = true
+        }
+
+        if (item === '<' && itemList[i + 1] === '/') {
+            tagStart = false
+            reverseList.push({start: startIndex, end: i})
+        } 
+
+        if (item === '>' && tagStart) {
+            startIndex = i + 1
+        }
+    }
+    return textReverse(text, reverseList)
+}
+/**
+ * Original 문장을 reverse 한다.
+ * 
+ * @param {string} text     Original 문장
+ * @param {list} list       reverse 할 index list
+ */
+function textReverse(text, list) {
+    var target = text
+
+    for (var j=0; j<list.length; j++) {
+        var check = list[j]
+        var searchText = text.substring(check.start, check.end)
+        var reverseText = searchText.split('').reverse().join('')
+        target = target.substr(0, check.start) + reverseText + target.substr(check.end)
+    }
+    return target
+}
+````
+front-end에서 사용될만한 기능 이므로 javascript(es5)로 작성하였습니다  
+
+target 을 replace(searchText, reverseText) 하려고 하였으나 Tag와 동일한 문자가 Tag사이에 있을경우 오동작하여 앞뒤 문장을 붙이는 방식으로 작성 되었습니다.
 
 ## Java
 1) Call by reference 와 Call by value의 차이점은? 
